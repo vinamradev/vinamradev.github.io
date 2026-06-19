@@ -269,6 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
         systemStatus.style.color = 'var(--accent-orange)';
         systemStatus.style.textShadow = '0 0 5px var(--glow-orange)';
       }
+    }
   }
 
   // --- CONTACT FORM AJAX SUBMISSION ---
