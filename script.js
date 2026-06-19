@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- ELEMENTS ---
   const loader = document.getElementById('loader');
   const loaderStatus = document.getElementById('loader-status');
-  const enterBtn = document.getElementById('enter-btn');
   const navbar = document.getElementById('navbar');
   const menuBtn = document.getElementById('menuBtn');
   const navLinksList = document.getElementById('navLinks');
@@ -18,39 +17,41 @@ document.addEventListener('DOMContentLoaded', () => {
   const sharinganEyes = document.querySelectorAll('.eye-svg');
   const tiltElements = document.querySelectorAll('.project-card, .skill-card, #dossier-portrait, #hero-portal');
 
-  // --- LOADER CONTROL (Genjutsu Zoom Transition) ---
-  const revealEnterButton = () => {
-    // Check if the loader button has not been shown already
-    if (loaderStatus && loaderStatus.textContent !== 'Genjutsu Aligned.') {
+  // --- AUTOMATED LOADER CONTROL (Genjutsu Zoom Transition) ---
+  let transitionTriggered = false;
+
+  const triggerLoaderTransition = () => {
+    if (transitionTriggered) return;
+    transitionTriggered = true;
+
+    // 1. Update text to show Genjutsu is initiating
+    if (loaderStatus) {
       loaderStatus.textContent = 'Genjutsu Aligned.';
       loaderStatus.style.textShadow = '0 0 15px var(--accent-orange)';
-      
-      setTimeout(() => {
-        if (enterBtn) {
-          enterBtn.classList.add('show');
-        }
-      }, 300);
     }
+
+    // 2. Wait a brief moment, then play zoom scaling transition
+    setTimeout(() => {
+      if (loader) {
+        loader.classList.add('genjutsu-transition');
+      }
+
+      // 3. Completely hide loader after transition completes
+      setTimeout(() => {
+        if (loader) {
+          loader.style.display = 'none';
+        }
+      }, 850);
+    }, 700); // 700ms of "Genjutsu Aligned" state before zoom
   };
 
-  // 1. Reveal button when all assets are fully loaded (images, fonts, stylesheets)
-  window.addEventListener('load', revealEnterButton);
+  // 1. Trigger transition when all assets are fully loaded (ensures loader shows for at least 1.6 seconds)
+  window.addEventListener('load', () => {
+    setTimeout(triggerLoaderTransition, 1600);
+  });
 
-  // 2. Fallback: Force reveal the button after 3 seconds in case of slow mobile connections
-  setTimeout(revealEnterButton, 3000);
-
-  // Handle click on Enter Button
-  if (enterBtn && loader) {
-    enterBtn.addEventListener('click', () => {
-      // 1. Play zoom scaling Genjutsu transition
-      loader.classList.add('genjutsu-transition');
-
-      // 2. Clear loader after animation
-      setTimeout(() => {
-        loader.style.display = 'none';
-      }, 850);
-    });
-  }
+  // 2. Fallback: Force transition after 3.5 seconds in case of slow mobile connections
+  setTimeout(triggerLoaderTransition, 3500);
 
   // --- STICKY NAVIGATION ---
   window.addEventListener('scroll', () => {
