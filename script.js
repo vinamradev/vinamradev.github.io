@@ -262,6 +262,56 @@ document.addEventListener('DOMContentLoaded', () => {
         systemStatus.style.color = 'var(--accent-orange)';
         systemStatus.style.textShadow = '0 0 5px var(--glow-orange)';
       }
-    }
+  }
+
+  // --- CONTACT FORM AJAX SUBMISSION ---
+  const contactForm = document.querySelector('.contact-form');
+  if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const submitBtn = contactForm.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Inscribing Message...';
+      submitBtn.disabled = true;
+      
+      const formData = new FormData(contactForm);
+      
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          submitBtn.textContent = 'Message Inscribed Successfully!';
+          submitBtn.style.backgroundColor = '#22c55e'; // Green success color
+          submitBtn.style.borderColor = '#22c55e';
+          submitBtn.style.boxShadow = '0 0 15px rgba(34, 197, 94, 0.4)';
+          contactForm.reset();
+          
+          setTimeout(() => {
+            submitBtn.textContent = originalText;
+            submitBtn.style.backgroundColor = '';
+            submitBtn.style.borderColor = '';
+            submitBtn.style.boxShadow = '';
+            submitBtn.disabled = false;
+          }, 4000);
+        } else {
+          submitBtn.textContent = 'Submission Failed. Retry?';
+          submitBtn.disabled = false;
+          setTimeout(() => {
+            submitBtn.textContent = originalText;
+          }, 3000);
+        }
+      })
+      .catch(error => {
+        submitBtn.textContent = 'Connection Error.';
+        submitBtn.disabled = false;
+        setTimeout(() => {
+          submitBtn.textContent = originalText;
+        }, 3000);
+      });
+    });
   }
 });
